@@ -1,5 +1,5 @@
 const express = require('express');
-const fetch = require('node-fetch');
+const axios = require('axios');
 
 const app = express();
 const port = 3000;
@@ -16,39 +16,34 @@ app.get('/', async (req, res) => {
     const data = { url: userUrl };
 
     try {
-        // ارسال درخواست اول
-        const response1 = await fetch(requestUrl, {
-            method: 'POST',
+        // ارسال درخواست با axios
+        const response = await axios.post(requestUrl, data, {
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            timeout: 10000, // تایم‌اوت 10 ثانیه‌ای برای جلوگیری از درخواست‌های طولانی
         });
 
-        if (!response1.ok) {
-            return res.status(500).json({ error: 'Error occurred while sending the first request.' });
-        }
-
-        // انتظار به مدت 5 ثانیه
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
-        // ارسال درخواست دوم
-        const response2 = await fetch(requestUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        if (!response2.ok) {
-            return res.status(500).json({ error: 'Error occurred while sending the second request.' });
-        }
-
-        const result = await response2.json();
-        res.json(result);
+        res.json(response.data);
 
     } catch (error) {
-        res.status(500).json({ error: 'An unexpected error occurred.', details: error.message });
+        console.error('Error:', error.message);
+
+        if (error.response) {
+            // خطاهای مربوط به پاسخ سرور (مثلاً 4xx یا 5xx)
+            res.status(error.response.status).json({
+                error: 'Request failed',
+                status: error.response.status,
+                details: error.response.data
+            });
+        } else if (error.request) {
+            // خطاهای مربوط به عدم دریافت پاسخ از سرور
+            res.status(500).json({ error: 'No response from server', details: error.request });
+        } else {
+            // خطاهای دیگر (مثلاً مشکلات مربوط به تنظیمات)
+            res.status(500).json({ error: 'Unexpected error', details: error.message });
+        }
     }
 });
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-})    
+});
