@@ -1,15 +1,21 @@
 {
   "name": "zisan-video-downloader",
   "version": "1.0.0",
-  "description": "A simple package for downloading videos from Pornhub using viddownloader.io",
+  "description": "A simple package for downloading videos from Pornhub using viddownloader.io API.",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "node test.js"
   },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {},
   "keywords": ["video", "downloader", "pornhub", "fetch"],
   "author": "TssHack",
   "license": "MIT",
-  "dependencies": {
-    "node-fetch": "^2.6.7"
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
