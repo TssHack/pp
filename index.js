@@ -22,7 +22,23 @@ app.get('/', async (req, res) => {
             timeout: 10000, // تایم‌اوت 10 ثانیه‌ای برای جلوگیری از درخواست‌های طولانی
         });
 
-        res.json(response.data);
+        // بررسی و پردازش داده‌های دریافتی از سرور
+        const videoData = response.data.data;
+        const videoInfo = {
+            title: videoData.title || 'No title available',
+            image: videoData.image || 'No image available',
+            video_quality: videoData.video_quality.map(quality => ({
+                type: quality.type,
+                url: quality.url,
+            })),
+            duration: videoData.duration || 'No duration available',
+        };
+
+        // ارسال پاسخ با فرمت جدید
+        res.json({
+            success: true,
+            data: videoInfo,
+        });
 
     } catch (error) {
         console.error('Error:', error.message);
