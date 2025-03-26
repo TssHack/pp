@@ -4,6 +4,8 @@ const axios = require('axios');
 const app = express();
 const port = 3000;
 
+app.use(express.json());
+
 app.get('/', async (req, res) => {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
@@ -12,14 +14,25 @@ app.get('/', async (req, res) => {
         return res.status(400).json({ error: 'URL is required' });
     }
 
-    const requestUrl = 'https://viddownloader.io/video-downloader/video/parse-pornhub';
-    const data = { url: userUrl };
+    const requestUrl = 'https://api-v1.viddownloader.io/video-downloader/video/parse-pornhub';
+    const data = {
+        fp: '3dfaee9a481',  // همانطور که در curl موجود است
+        fp1: 'VdOJxowukPvdfeoCXR0eQDfhlB6uIvWv0Gd1nW7M4PAqgJrSPGdDORVuWqsc/GyK',  // همانطور که در curl موجود است
+        url: userUrl
+    };
 
     try {
         // ارسال درخواست با axios
         const response = await axios.post(requestUrl, data, {
-            headers: { 'Content-Type': 'application/json' },
-            timeout: 10000, // تایم‌اوت 10 ثانیه‌ای برای جلوگیری از درخواست‌های طولانی
+            headers: {
+                'Content-Type': 'application/json',
+                'Origin': 'https://viddownloader.io',
+                'Referer': 'https://viddownloader.io/',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+                'Accept': '*/*',
+                'Accept-Encoding': 'gzip, deflate, br'
+            },
+            timeout: 10000,  // تایم‌اوت 10 ثانیه‌ای برای جلوگیری از درخواست‌های طولانی
         });
 
         // خروجی مشابه به ساختار قبلی
