@@ -22,23 +22,26 @@ app.get('/', async (req, res) => {
             timeout: 10000, // تایم‌اوت 10 ثانیه‌ای برای جلوگیری از درخواست‌های طولانی
         });
 
-        // بررسی و پردازش داده‌های دریافتی از سرور
+        // خروجی مشابه به ساختار قبلی
         const videoData = response.data.data;
-        const videoInfo = {
-            title: videoData.title || 'No title available',
-            image: videoData.image || 'No image available',
-            video_quality: videoData.video_quality.map(quality => ({
-                type: quality.type,
-                url: quality.url,
-            })),
-            duration: videoData.duration || 'No duration available',
+
+        const result = {
+            code: 200,
+            msg: '',
+            data: {
+                image: videoData.image,
+                title: videoData.title,
+                video_quality: videoData.video_quality.map((quality) => ({
+                    url: quality.url,
+                    video_type: quality.video_type,
+                    mime_type: quality.mime_type,
+                    type: quality.type,
+                })),
+                duration: videoData.duration,
+            },
         };
 
-        // ارسال پاسخ با فرمت جدید
-        res.json({
-            success: true,
-            data: videoInfo,
-        });
+        res.json(result);
 
     } catch (error) {
         console.error('Error:', error.message);
